@@ -66,7 +66,7 @@ print("    <h1>List of Questions</h1>")
 # ใช้ loop เพื่อวนค่าภายใน q เพื่อดูว่ามี คำถามกี่คำถามและให้ แสดงออกมาที่หน้าเว็บ
 for i in range(len(q)):
 
-    # เป็น f string มีคำถามที่... : ตามด้วยคำถามที่ได้จากการ for loop
+    # แสดงปุ่มให้เลือกคำถาม แล้วส่ง query string ไปเมื่อไปยัง path อื่น
     print(f"<br> <a href='/cgi-bin/vote.py?id={q[i]['id']}'> Question {i+1} : {q[i]['question']}</a>")
 
 print("</body>")
