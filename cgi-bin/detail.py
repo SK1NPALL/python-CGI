@@ -35,7 +35,6 @@ def post_questions(question) :
     cursor.execute("INSERT INTO questions (question_text) VALUES (?)" , (question,))
     conn.commit() # ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
     
-
 # เอาคอมเม้นออกเพื่อใช้ function เพิ่มคำถาม
 
 # post_questions("What single do you like?") 
@@ -107,7 +106,6 @@ def get_choice() :
 # ตัวแปรที่เก็บค่า q = question และ c = choice
 q = get_questions()
 c = get_choice()
-
     
 # Required header that tells the browser how to render the output
 print("Content-Type: text/html")
@@ -123,37 +121,10 @@ print("<body>")
 print("    <h1>List of Questions</h1>")
 
 # ใช้ loop เพื่อวนค่าภายใน q เพื่อดูว่ามี คำถามกี่คำถามและให้ แสดงออกมาที่หน้าเว็บ
-choice = 4
-
 for i in range(len(q)):
 
-    if( choice == q[i]['id']) :
-
-        # เป็น f string มีคำถามที่... : ตามด้วยคำถามที่ได้จากการ for loop
-        print(f"<br> <h3> Question {i+1} : {q[i]['question']}</h3>")
-
-        # เปิด tags ฟอร์ม เมื่อมีการกดปุ่มหรือกระทำใดๆ ให้ย้าย path ไปที่ไฟล์ result.py
-        print(f"<form action='/cgi-bin/result.py' method='GET'>")  
-
-        # สร้าง loop j เพื่อวน choice
-        for j in range(len(c)) :
-            
-            # เช็คว่า id ของคำถาม ตรงกับ id ของ choice ไหมที่เป็น foreign key
-            if (q[i]['id'] == c[j]['question_id']):
-
-                # ถ้าใช่ก็ให้วนช้อยส์ออกมา เป็นปุ่ม radio ให้เลือก
-                print(f"""
-                
-                    <input type="radio" id="choice_{c[j]['id']}" name="selected_choice" value="{c[j]['id']}">
-                    <label for="choice_{c[j]['id']}">{c[j]['choice']}</label><br>
-            
-                """)
-        
-        # ปุ่ม submit
-        print("<br><input type='submit' value='submit'>")
-
-        # ปิด tags form
-        print("</form>")  
+    # เป็น f string มีคำถามที่... : ตามด้วยคำถามที่ได้จากการ for loop
+    print(f"<br> <a href='/cgi-bin/vote.py?id={q[i]['id']}'> Question {i+1} : {q[i]['question']}</a>")
 
 print("</body>")
 print("</html>")

@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
 import sqlite3 # import database ออกมา
+import cgi
+import cgitb
+
+# เปิดการแจ้งเตือน Error บนหน้าเว็บ (ช่วยให้ Debug ง่ายขึ้นมาก)
+cgitb.enable()
 
 conn = sqlite3.connect('mydatabase.db') #ตัวแปร connect เชื่อมกับ database ชื่อ mydatabase.db
 cursor = conn.cursor() #ตัวแปร cursor ไว้ใช้ excute query
@@ -108,7 +113,9 @@ def get_choice() :
 q = get_questions()
 c = get_choice()
 
-    
+form = cgi.FieldStorage()
+question_id= int(form.getvalue('id'))
+
 # Required header that tells the browser how to render the output
 print("Content-Type: text/html")
 print()  # A blank line to end the headers
@@ -123,11 +130,10 @@ print("<body>")
 print("    <h1>List of Questions</h1>")
 
 # ใช้ loop เพื่อวนค่าภายใน q เพื่อดูว่ามี คำถามกี่คำถามและให้ แสดงออกมาที่หน้าเว็บ
-choice = 4
 
 for i in range(len(q)):
 
-    if( choice == q[i]['id']) :
+    if( question_id == q[i]['id']) :
 
         # เป็น f string มีคำถามที่... : ตามด้วยคำถามที่ได้จากการ for loop
         print(f"<br> <h3> Question {i+1} : {q[i]['question']}</h3>")
@@ -144,7 +150,7 @@ for i in range(len(q)):
                 # ถ้าใช่ก็ให้วนช้อยส์ออกมา เป็นปุ่ม radio ให้เลือก
                 print(f"""
                 
-                    <input type="radio" id="choice_{c[j]['id']}" name="selected_choice" value="{c[j]['id']}">
+                    <input type="radio" id="choice_{c[j]['id']}" name="id" value="{q[i]['id']}">
                     <label for="choice_{c[j]['id']}">{c[j]['choice']}</label><br>
             
                 """)
