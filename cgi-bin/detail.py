@@ -5,55 +5,6 @@ import sqlite3 # import database ออกมา
 conn = sqlite3.connect('mydatabase.db') #ตัวแปร connect เชื่อมกับ database ชื่อ mydatabase.db
 cursor = conn.cursor() #ตัวแปร cursor ไว้ใช้ excute query
 
-# function สร้างตาราง
-def create_table() :
-
-    # สร้างตาราง questions
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS questions (
-            id INTEGER PRIMARY KEY,
-            question_text TEXT NOT NULL
-        )
-     ''')
-        
-    # 2. สร้างตาราง Choice พร้อม Foreign Key
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS choices (
-            id INTEGER PRIMARY KEY,
-            question_id INTEGER,
-            choice_text TEXT NOT NULL,
-            votes INTEGER DEFAULT 0,
-            FOREIGN KEY (question_id) REFERENCES questions(id)
-            )
-    ''')
-    conn.commit() #ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
-
-# ฟังก์ชันเพิ่มคำถาม มี parameter question
-def post_questions(question) :
-    
-    # ใช้ cursor excute และเขียน query ให้ไปเพิมข้อมูลที่ table question
-    cursor.execute("INSERT INTO questions (question_text) VALUES (?)" , (question,))
-    conn.commit() # ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
-    
-# เอาคอมเม้นออกเพื่อใช้ function เพิ่มคำถาม
-
-# post_questions("What single do you like?") 
-# post_questions("How many money in your pocket?")
-
-# ฟังก์ชันเพิ่มช้อยส์ มี parameter question_id และ choice 
-def post_choice( question_id , choice ):
-
-    # ใช้ cursor excute และเขียน query ให้ไปเพิมข้อมูลที่ table choice
-    cursor.execute("INSERT INTO choices (question_id , choice_text) VALUES (? , ?)" , (question_id, choice,))
-    conn.commit()# ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
-
-# เอาคอมเม้นออกเพื่อใช้ function เพิ่มคำถาม 
-# argument ตัวแรกมีไว้ระบุว่าให้เพิ่ม choice ไปที่คำถามไหน
-
-# post_choice(4 , "15 baht")
-# post_choice(4 , "1000 baht")
-# post_choice(4 , "0 baht")
-
 # ฟังก์ชันดึงข้อมูลคำถาม และแปลงจาก tuple เป็น list
 def get_questions():
     
@@ -74,14 +25,6 @@ def get_questions():
         
     # return list กลับไป
     return questions_list
-
-# ฟังก์ชันลบคำถามโดยใช้ระบุ id เพื่อลบ
-def delete_questions(id):
-    
-    # ใช้ cursor execute เขียน query ให้มันลบข้อมูลตาม argument id
-    cursor.execute('DELETE FROM questions WHERE id = ?' , (id,))
-    conn.commit() # ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
-    
 
 # ฟังก์ชันดึงข้อมูลช้อยส์มาแปลงจาก tuple เป็น list
 def get_choice() :

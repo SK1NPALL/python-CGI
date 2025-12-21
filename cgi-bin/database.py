@@ -1,3 +1,5 @@
+# ไฟล์ตัวอย่างโค้ด
+
 #!/usr/bin/env python3
 
 import sqlite3 # import database ออกมา
@@ -104,58 +106,13 @@ def get_choice() :
         
     return choice_list
 
-# ตัวแปรที่เก็บค่า q = question และ c = choice
-q = get_questions()
-c = get_choice()
+# รันคำสั่งภายในนี้ #################################
 
-    
-# Required header that tells the browser how to render the output
-print("Content-Type: text/html")
-print()  # A blank line to end the headers
 
-# Start of the HTML content
-print("<!DOCTYPE html>")
-print("<html>")
-print("<head>")
-print("    <title>Python CGI Example</title>")
-print("</head>")
-print("<body>")
-print("    <h1>List of Questions</h1>")
 
-# ใช้ loop เพื่อวนค่าภายใน q เพื่อดูว่ามี คำถามกี่คำถามและให้ แสดงออกมาที่หน้าเว็บ
-choice = 4
 
-for i in range(len(q)):
 
-    if( choice == q[i]['id']) :
 
-        # เป็น f string มีคำถามที่... : ตามด้วยคำถามที่ได้จากการ for loop
-        print(f"<br> <h3> Question {i+1} : {q[i]['question']}</h3>")
 
-        # เปิด tags ฟอร์ม เมื่อมีการกดปุ่มหรือกระทำใดๆ ให้ย้าย path ไปที่ไฟล์ result.py
-        print(f"<form action='/cgi-bin/result.py' method='GET'>")  
-
-        # สร้าง loop j เพื่อวน choice
-        for j in range(len(c)) :
-            
-            # เช็คว่า id ของคำถาม ตรงกับ id ของ choice ไหมที่เป็น foreign key
-            if (q[i]['id'] == c[j]['question_id']):
-
-                # ถ้าใช่ก็ให้วนช้อยส์ออกมา เป็นปุ่ม radio ให้เลือก
-                print(f"""
-                
-                    <input type="radio" id="choice_{c[j]['id']}" name="selected_choice" value="{c[j]['id']}">
-                    <label for="choice_{c[j]['id']}">{c[j]['choice']}</label><br>
-            
-                """)
-        
-        # ปุ่ม submit
-        print("<br><input type='submit' value='submit'>")
-
-        # ปิด tags form
-        print("</form>")  
-
-print("</body>")
-print("</html>")
-
+###########################################
 conn.close()

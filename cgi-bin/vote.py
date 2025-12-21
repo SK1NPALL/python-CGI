@@ -10,56 +10,6 @@ cgitb.enable()
 conn = sqlite3.connect('mydatabase.db') #ตัวแปร connect เชื่อมกับ database ชื่อ mydatabase.db
 cursor = conn.cursor() #ตัวแปร cursor ไว้ใช้ excute query
 
-# function สร้างตาราง
-def create_table() :
-
-    # สร้างตาราง questions
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS questions (
-            id INTEGER PRIMARY KEY,
-            question_text TEXT NOT NULL
-        )
-     ''')
-        
-    # 2. สร้างตาราง Choice พร้อม Foreign Key
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS choices (
-            id INTEGER PRIMARY KEY,
-            question_id INTEGER,
-            choice_text TEXT NOT NULL,
-            votes INTEGER DEFAULT 0,
-            FOREIGN KEY (question_id) REFERENCES questions(id)
-            )
-    ''')
-    conn.commit() #ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
-
-# ฟังก์ชันเพิ่มคำถาม มี parameter question
-def post_questions(question) :
-    
-    # ใช้ cursor excute และเขียน query ให้ไปเพิมข้อมูลที่ table question
-    cursor.execute("INSERT INTO questions (question_text) VALUES (?)" , (question,))
-    conn.commit() # ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
-    
-
-# เอาคอมเม้นออกเพื่อใช้ function เพิ่มคำถาม
-
-# post_questions("What single do you like?") 
-# post_questions("How many money in your pocket?")
-
-# ฟังก์ชันเพิ่มช้อยส์ มี parameter question_id และ choice 
-def post_choice( question_id , choice ):
-
-    # ใช้ cursor excute และเขียน query ให้ไปเพิมข้อมูลที่ table choice
-    cursor.execute("INSERT INTO choices (question_id , choice_text) VALUES (? , ?)" , (question_id, choice,))
-    conn.commit()# ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
-
-# เอาคอมเม้นออกเพื่อใช้ function เพิ่มคำถาม 
-# argument ตัวแรกมีไว้ระบุว่าให้เพิ่ม choice ไปที่คำถามไหน
-
-# post_choice(4 , "15 baht")
-# post_choice(4 , "1000 baht")
-# post_choice(4 , "0 baht")
-
 # ฟังก์ชันดึงข้อมูลคำถาม และแปลงจาก tuple เป็น list
 def get_questions():
     
@@ -80,14 +30,6 @@ def get_questions():
         
     # return list กลับไป
     return questions_list
-
-# ฟังก์ชันลบคำถามโดยใช้ระบุ id เพื่อลบ
-def delete_questions(id):
-    
-    # ใช้ cursor execute เขียน query ให้มันลบข้อมูลตาม argument id
-    cursor.execute('DELETE FROM questions WHERE id = ?' , (id,))
-    conn.commit() # ต้องมีทุกครั้งหลังจากเปลี่ยนแปลง database
-    
 
 # ฟังก์ชันดึงข้อมูลช้อยส์มาแปลงจาก tuple เป็น list
 def get_choice() :
@@ -116,7 +58,7 @@ c = get_choice()
 form = cgi.FieldStorage()
 question_id= int(form.getvalue('id'))
 
-# Required header that tells the browser how to render the output
+# Required header that tells the browser2 how to render the output
 print("Content-Type: text/html")
 print()  # A blank line to end the headers
 
@@ -139,7 +81,7 @@ for i in range(len(q)):
         print(f"<br> <h3> Question {i+1} : {q[i]['question']}</h3>")
 
         # เปิด tags ฟอร์ม เมื่อมีการกดปุ่มหรือกระทำใดๆ ให้ย้าย path ไปที่ไฟล์ result.py
-        print(f"<form action='/cgi-bin/result.py' method='GET'>")  
+        print(f"<form action='/cgi-bin/result.py' method='POST'>")  
 
         # สร้าง loop j เพื่อวน choice
         for j in range(len(c)) :
@@ -150,7 +92,7 @@ for i in range(len(q)):
                 # ถ้าใช่ก็ให้วนช้อยส์ออกมา เป็นปุ่ม radio ให้เลือก
                 print(f"""
                 
-                    <input type="radio" id="choice_{c[j]['id']}" name="id" value="{q[i]['id']}">
+                    <input type="radio" id="choice_{c[j]['id']}" name= "selected_choice" value="{c[j]['id']}" required>
                     <label for="choice_{c[j]['id']}">{c[j]['choice']}</label><br>
             
                 """)

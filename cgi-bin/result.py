@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
-
-# ดูว่า url ส่งข้อมูลอะไรมา
 import cgi
+import sqlite3 # import database ออกมา
 
 form = cgi.FieldStorage()
-question_target_id = int(form.getvalue('id')) # จะได้ค่า choice ที่ส่งมา
-
-import sqlite3 # import database ออกมา
 
 conn = sqlite3.connect('mydatabase.db') #ตัวแปร connect เชื่อมกับ database ชื่อ mydatabase.db
 cursor = conn.cursor() #ตัวแปร cursor ไว้ใช้ excute query
@@ -51,10 +47,24 @@ def get_choice() :
         
     return choice_list
 
+
+# ตัวแปรที่จะมาจัดการบวกผลโหวตหลังจากกดโหวตไปแล้ว
+# ใช้ id choice ของเราและบวกค่า votes ด้วยการเขียน query
+def vote_handle() : 
+
+    cursor.execute("UPDATE choices SET votes = votes + 1 WHERE id = ?",(choice_target_id,))
+    conn.commit()
+
+# เก็บค่า choice id ที่ถูกส่งมาในตัวแปร choice_target_id
+choice_target_id = int(form.getvalue('selected_choice'))
+
+# รันฟังก์ชันเพื่อทำการบวกค่า votes
+vote_handle()
+
 q = get_questions()
 c = get_choice()
 
-print(get_choice())
+question_target = ''
 
 # Required header that tells the browser how to render the output
 print("Content-Type: text/html")
@@ -68,26 +78,37 @@ print("    <title>Python CGI Example</title>")
 print("</head>")
 print("<body>")
 
-# ใช้ loop เพื่อวนค่าภายใน q เพื่อดูว่ามี คำถามกี่คำถามและให้ แสดงออกมาที่หน้าเว็บ
 
 print("<h1>Vote result</h1>")
 
+# ค่าที่รับมาจาก url มันเป็น id ของ choice แต่เราต้องการหาว่า choice นั้นตรงกับ question id ที่เท่าไหร่ 
+# พูดง่ายๆ วนลูปหาว่ามันเป็นช้อยส์ของคำถามไหน ถ้าเจอก็เก็บในตัวแปร question_target 
+for i in range(len(c)) :
+
+    if (choice_target_id == c[i]['id']) :
+
+        question_target = c[i]['question_id']
+
+
+# วนซ้ำใน q ถ้า id ตรงกับ question target ก็ให้แสดงผลออกมา
 for i in range(len(q)) :
 
-    if (question_target_id == q[i]['id']) :
-
+    if (question_target == q[i]['id']) :
         print(f'<h2> Question : {q[i]['question']}</h2>')
 
-# สร้าง loop j เพื่อวน choice
+# สร้าง loop j เพื่อวน choice และแสดง value ออกมา
 for j in range(len(c)) :
 
-    if (question_target_id == c[j]['question_id']):
+    if (question_target == c[j]['question_id']):
 
         print(f"""
             
-            <p">{c[j]['choice']} ----- vote: {c[0]['vote']}</p> 
+            <p">{c[j]['choice']} ----- vote: {c[j]['vote']}</p> 
     
         """)
+
+# ปุ่ม a เพื่อบอกว่าต้องการโหวตอีกครั้งไหม แล้วเปลี่ยน path ไปยัง vote.py พร้อม id ของคำถามนั้น
+print(f"<a href='/cgi-bin/vote.py?id={question_target}'>Vote again?</a>")
 
 print("</body>")
 print("</html>")
